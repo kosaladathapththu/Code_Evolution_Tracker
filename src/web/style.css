@@ -1,0 +1,20 @@
+body { font-family: Arial, sans-serif; margin: 22px; background: #fafafa; }
+h1 { margin-bottom: 14px; }
+.grid { display: grid; grid-template-columns: 1.2fr 1fr 0.9fr; gap: 14px; align-items: start; }
+.card { background: white; border: 1px solid #e4e4e4; border-radius: 12px; padding: 14px; }
+label { display:block; margin-top: 10px; font-size: 13px; color:#333; }
+textarea, input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; margin-top: 6px; box-sizing: border-box; }
+.row { display: flex; gap: 10px; }
+.col { flex: 1; }
+.btns { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+button { padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; background: #fff; cursor: pointer; }
+button:hover { background: #f2f2f2; }
+.out { background: #f6f6f6; padding: 10px; border-radius: 10px; overflow:auto; }
+.list { margin-top: 10px; display: grid; gap: 8px; }
+.item { border: 1px solid #eee; border-radius: 10px; padding: 10px; background: #fff; }
+.item .meta { font-size: 12px; color: #555; }
+.item .note { margin-top: 6px; font-size: 13px; }
+.item .tag { display:inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid #ddd; margin-top: 8px; }
+.item.active { border-color: #999; }
+.smallbtns { margin-top: 8px; display:flex; gap:8px; flex-wrap: wrap; }
+.smallbtns button { padding: 7px 10px; font-size: 12px; }

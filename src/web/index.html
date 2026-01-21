@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Debugging Timeline Tool</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: white;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 0.9fr;
+      gap: 20px;
+      align-items: start;
+    }
+    
+    @media (max-width: 1200px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    h2 {
+      color: #667eea;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    h3 {
+      color: #555;
+      font-size: 1.1em;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    
+    label {
+      display: block;
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    
+    textarea, input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 200px;
+    }
+    
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .btns {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button.secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 4px 15px rgba(245,87,108,0.3);
+    }
+    
+    button.secondary:hover {
+      box-shadow: 0 6px 20px rgba(245,87,108,0.4);
+    }
+    
+    .out {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 300px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      border: 2px solid #e0e0e0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .list {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .item {
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 16px;
+      background: #fafafa;
+      transition: all 0.3s;
+    }
+    
+    .item:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+    }
+    
+    .item.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+    }
+    
+    .item .meta {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .item .meta b {
+      color: #667eea;
+      font-size: 14px;
+    }
+    
+    .item .note {
+      margin: 10px 0;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    .item .tag {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    
+    .smallbtns {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .smallbtns button {
+      padding: 8px 14px;
+      font-size: 12px;
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      box-shadow: none;
+    }
+    
+    .smallbtns button:hover {
+      background: #667eea;
+      color: white;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #4caf50;
+      color: white;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+      font-style: italic;
+    }
+    
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .stat-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .stat-box .number {
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .stat-box .label {
+      font-size: 12px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐛 Code Debugging Timeline Tool</h1>
+    
+    <div class="grid">
+      <!-- Editor Card -->
+      <div class="card">
+        <h2>📝 Editor</h2>
+        
+        <label>Code</label>
+        <textarea id="codeText" placeholder="Paste your code here and track your debugging journey..."></textarea>
+        
+        <div class="row">
+          <div>
+            <label>Error Type</label>
+            <input id="errorType" placeholder="e.g., SyntaxError, NullPointer" />
+          </div>
+          <div>
+            <label>Note</label>
+            <input id="note" placeholder="What did you change?" />
+          </div>
+        </div>
+        
+        <div class="btns">
+          <button onclick="saveStep()">💾 Save Step</button>
+          <button onclick="undoStep()" class="secondary">↩️ Undo</button>
+          <button onclick="markBugFree()">✅ Mark Bug-Free</button>
+          <button onclick="jumpBugFree()" class="secondary">🚀 Jump to Bug-Free</button>
+        </div>
+        
+        <h3>Current Version</h3>
+        <pre id="currentBox" class="out">No version loaded yet</pre>
+      </div>
+      
+      <!-- Timeline Card -->
+      <div class="card">
+        <h2>⏱️ Timeline</h2>
+        <div class="btns">
+          <button onclick="refresh()">🔄 Refresh</button>
+          <button onclick="clearAll()" class="secondary">🗑️ Clear All</button>
+        </div>
+        <div id="timeline" class="list"></div>
+      </div>
+      
+      <!-- Analytics Card -->
+      <div class="card">
+        <h2>📊 Analytics</h2>
+        <div class="btns">
+          <button onclick="loadAnalytics()">📈 Load Analytics</button>
+        </div>
+        <div id="analyticsBox"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // In-memory storage (simulating backend)
+    let timeline = [];
+    let currentIndex = -1;
+    let versionCounter = 0;
+    
+    function esc(s) {
+      return (s ?? "").toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    
+    function saveStep() {
+      const codeText = document.getElementById("codeText").value;
+      const note = document.getElementById("note").value;
+      const errorType = document.getElementById("errorType").value;
+      
+      if (!codeText.trim()) {
+        alert("⚠️ Please enter some code before saving!");
+        return;
+      }
+      
+      const newVersion = {
+        versionId: ++versionCounter,
+        codeText,
+        note: note || "No note provided",
+        errorType: errorType || "Unknown",
+        timestamp: new Date().toISOString(),
+        bugFree: false
+      };
+      
+      // Remove versions after current if we're not at the end
+      if (currentIndex < timeline.length - 1) {
+        timeline = timeline.slice(0, currentIndex + 1);
+      }
+      
+      timeline.push(newVersion);
+      currentIndex = timeline.length - 1;
+      
+      document.getElementById("note").value = "";
+      
+      refresh();
+      loadAnalytics();
+    }
+    
+    function refresh() {
+      const current = timeline[currentIndex] || null;
+      
+      // Update current box
+      const currentBox = document.getElementById("currentBox");
+      if (current) {
+        currentBox.textContent = JSON.stringify(current, null, 2);
+      } else {
+        currentBox.textContent = "No version loaded yet";
+      }
+      
+      // Update timeline
+      const wrap = document.getElementById("timeline");
+      
+      if (timeline.length === 0) {
+        wrap.innerHTML = '<div class="empty-state">No versions saved yet. Start debugging!</div>';
+        return;
+      }
+      
+      wrap.innerHTML = "";
+      
+      timeline.slice().reverse().forEach((v, idx) => {
+        const actualIndex = timeline.length - 1 - idx;
+        const div = document.createElement("div");
+        div.className = "item" + (actualIndex === currentIndex ? " active" : "");
+        const dt = new Date(v.timestamp).toLocaleString();
+        
+        div.innerHTML = `
+          <div class="meta">
+            <b>v${v.versionId}</b> • 
+            <span>${esc(dt)}</span> • 
+            ${v.bugFree ? '<span class="badge">✅ Bug-Free</span>' : '<span style="color: #999;">—</span>'}
+          </div>
+          <div class="note">${esc(v.note)}</div>
+          <div class="tag">${esc(v.errorType)}</div>
+          <div class="smallbtns">
+            <button data-idx="${actualIndex}" data-act="load">📂 Load</button>
+            <button data-idx="${actualIndex}" data-act="mark">✅ Mark</button>
+          </div>
+        `;
+        
+        div.querySelector('[data-act="load"]').onclick = (e) => {
+          const i = parseInt(e.target.dataset.idx);
+          loadVersion(i);
+        };
+        
+        div.querySelector('[data-act="mark"]').onclick = (e) => {
+          const i = parseInt(e.target.dataset.idx);
+          markVersionBugFree(i);
+        };
+        
+        wrap.appendChild(div);
+      });
+    }
+    
+    function loadVersion(index) {
+      const v = timeline[index];
+      if (!v) return;
+      
+      document.getElementById("codeText").value = v.codeText || "";
+      document.getElementById("note").value = v.note || "";
+      document.getElementById("errorType").value = v.errorType || "";
+      
+      currentIndex = index;
+      refresh();
+    }
+    
+    function undoStep() {
+      if (currentIndex <= 0) {
+        alert("⚠️ Nothing to undo!");
+        return;
+      }
+      
+      currentIndex--;
+      const v = timeline[currentIndex];
+      
+      document.getElementById("codeText").value = v.codeText || "";
+      document.getElementById("note").value = v.note || "";
+      document.getElementById("errorType").value = v.errorType || "";
+      
+      refresh();
+    }
+    
+    function markBugFree() {
+      if (currentIndex < 0) {
+        alert("⚠️ No current version to mark!");
+        return;
+      }
+      
+      timeline[currentIndex].bugFree = true;
+      refresh();
+      loadAnalytics();
+    }
+    
+    function markVersionBugFree(index) {
+      if (index < 0 || index >= timeline.length) return;
+      
+      timeline[index].bugFree = true;
+      refresh();
+      loadAnalytics();
+    }
+    
+    function jumpBugFree() {
+      const bugFreeVersions = timeline
+        .map((v, i) => ({v, i}))
+        .filter(({v}) => v.bugFree)
+        .reverse();
+      
+      if (bugFreeVersions.length === 0) {
+        alert("⚠️ No bug-free versions found!");
+        return;
+      }
+      
+      const {v, i} = bugFreeVersions[0];
+      
+      document.getElementById("codeText").value = v.codeText || "";
+      document.getElementById("note").value = v.note || "";
+      document.getElementById("errorType").value = v.errorType || "";
+      
+      currentIndex = i;
+      refresh();
+    }
+    
+    function loadAnalytics() {
+      const box = document.getElementById("analyticsBox");
+      
+      if (timeline.length === 0) {
+        box.innerHTML = '<div class="empty-state">No data to analyze yet</div>';
+        return;
+      }
+      
+      const totalVersions = timeline.length;
+      const bugFreeCount = timeline.filter(v => v.bugFree).length;
+      const errorTypes = {};
+      
+      timeline.forEach(v => {
+        const type = v.errorType || "Unknown";
+        errorTypes[type] = (errorTypes[type] || 0) + 1;
+      });
+      
+      const mostCommonError = Object.entries(errorTypes)
+        .sort((a, b) => b[1] - a[1])[0];
+      
+      const avgStepsToFix = bugFreeCount > 0 ? 
+        (totalVersions / bugFreeCount).toFixed(1) : "N/A";
+      
+      box.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="number">${totalVersions}</div>
+            <div class="label">Total Steps</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">${bugFreeCount}</div>
+            <div class="label">Bug-Free</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">${Object.keys(errorTypes).length}</div>
+            <div class="label">Error Types</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">${avgStepsToFix}</div>
+            <div class="label">Avg Steps</div>
+          </div>
+        </div>
+        <div class="out" style="margin-top: 16px;">
+${mostCommonError ? `Most Common Error: ${mostCommonError[0]} (${mostCommonError[1]} times)` : 'No errors tracked yet'}
+
+Error Breakdown:
+${Object.entries(errorTypes).map(([type, count]) => `  ${type}: ${count}`).join('\n')}
+        </div>
+      `;
+    }
+    
+    function clearAll() {
+      if (!confirm("⚠️ Are you sure you want to clear all data? This cannot be undone!")) {
+        return;
+      }
+      
+      timeline = [];
+      currentIndex = -1;
+      versionCounter = 0;
+      
+      document.getElementById("codeText").value = "";
+      document.getElementById("note").value = "";
+      document.getElementById("errorType").value = "";
+      
+      refresh();
+      loadAnalytics();
+    }
+    
+    // Auto-load on start
+    refresh();
+    loadAnalytics();
+  </script>
+</body>
+</html>
