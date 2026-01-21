@@ -1,0 +1,8 @@
+ Run backend (PowerShell, project root)
+javac --add-modules jdk.httpserver -d out src\app\ApiServer.java src\ds\*.java src\model\*.java
+java  --add-modules jdk.httpserver -cp out app.ApiServer
+Test quickly:
+
+Open http://localhost:8080/timeline (should show empty timeline JSON)
+
+
