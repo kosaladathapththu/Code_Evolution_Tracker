@@ -45,4 +45,9 @@ public class ErrorBST {
         mostRec(cur.right, best);
         return best[0];
     }
+
+    
+    public void clear() {
+        root = null;
+    }
 }
