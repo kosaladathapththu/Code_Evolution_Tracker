@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VersionLinkedList {
+
     private VersionNode head;
     private VersionNode tail;
     private VersionNode current;
@@ -22,10 +23,17 @@ public class VersionLinkedList {
         return n;
     }
 
-    public VersionNode getCurrentNode() { return current; }
-    public Version getCurrent() { return current == null ? null : current.data; }
+    public VersionNode getCurrentNode() {
+        return current;
+    }
 
-    public void setCurrent(VersionNode n) { current = n; }
+    public Version getCurrent() {
+        return current == null ? null : current.data;
+    }
+
+    public void setCurrent(VersionNode n) {
+        current = n;
+    }
 
     public VersionNode findById(int id) {
         VersionNode t = head;
@@ -54,5 +62,4 @@ public class VersionLinkedList {
         }
         return null;
     }
-    
 }
