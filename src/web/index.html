@@ -4,271 +4,741 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Code Debugging Timeline Tool</title>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1d29;
       min-height: 100vh;
-      padding: 20px;
+      padding: 24px;
+      color: #e4e6eb;
     }
-
-    .container { max-width: 1400px; margin: auto; }
-
+    
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      margin-bottom: 32px;
+    }
+    
     h1 {
-      color: white;
-      font-size: 2.5em;
-      margin-bottom: 30px;
-      text-align: center;
+      color: #00d9ff;
+      font-size: 28px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
     }
-
+    
+    .subtitle {
+      color: #8b92a8;
+      font-size: 14px;
+    }
+    
     .grid {
       display: grid;
       grid-template-columns: 1.2fr 1fr 0.9fr;
       gap: 20px;
+      align-items: start;
     }
-
+    
     @media (max-width: 1200px) {
       .grid { grid-template-columns: 1fr; }
     }
-
+    
     .card {
-      background: white;
-      border-radius: 16px;
+      background: #242837;
+      border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      border: 1px solid #2d3142;
     }
-
-    h2 { color: #667eea; margin-bottom: 20px; }
-
-    label { font-weight: 600; margin-top: 12px; display: block; }
-
+    
+    h2 {
+      color: #e4e6eb;
+      font-size: 18px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    h2 i {
+      color: #00d9ff;
+      font-size: 20px;
+    }
+    
+    h3 {
+      color: #b4b9c7;
+      font-size: 15px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    
+    label {
+      display: block;
+      margin-top: 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #b4b9c7;
+      margin-bottom: 8px;
+    }
+    
     textarea, input {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 2px solid #ddd;
-      margin-top: 6px;
-      font-family: monospace;
+      padding: 12px 14px;
+      border: 1px solid #3a3f51;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      background: #1a1d29;
+      color: #e4e6eb;
+      transition: all 0.2s;
     }
-
-    textarea { min-height: 200px; }
-
+    
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: #00d9ff;
+      background: #1e222f;
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 220px;
+      line-height: 1.6;
+    }
+    
     .row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 12px;
+      gap: 14px;
+      margin-top: 16px;
     }
-
+    
     .btns {
+      margin-top: 20px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 16px;
     }
-
+    
     button {
-      padding: 10px 16px;
-      border-radius: 10px;
+      padding: 10px 18px;
       border: none;
-      background: #667eea;
-      color: white;
+      border-radius: 7px;
+      background: #2d5a7b;
+      color: #e4e6eb;
+      font-weight: 500;
       cursor: pointer;
-      font-weight: 600;
-    }
-
-    button.secondary { background: #f5576c; }
-
-    .out {
-      margin-top: 12px;
-      background: #f4f4f4;
-      padding: 12px;
-      border-radius: 8px;
-      max-height: 250px;
-      overflow: auto;
+      transition: all 0.2s;
       font-size: 13px;
-      white-space: pre-wrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
-
+    
+    button:hover {
+      background: #3a6d94;
+      transform: translateY(-1px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button.primary {
+      background: #00a8cc;
+    }
+    
+    button.primary:hover {
+      background: #00c4e8;
+    }
+    
+    button.danger {
+      background: #c84b31;
+    }
+    
+    button.danger:hover {
+      background: #e05a3f;
+    }
+    
+    button.success {
+      background: #2d6a4f;
+    }
+    
+    button.success:hover {
+      background: #3a8263;
+    }
+    
+    button i {
+      font-size: 12px;
+    }
+    
+    .out {
+      background: #1a1d29;
+      padding: 16px;
+      border-radius: 8px;
+      overflow: auto;
+      max-height: 300px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      border: 1px solid #2d3142;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #b4b9c7;
+      line-height: 1.6;
+    }
+    
     .list {
       margin-top: 16px;
-      max-height: 500px;
-      overflow-y: auto;
       display: grid;
-      gap: 10px;
+      gap: 12px;
+      max-height: 680px;
+      overflow-y: auto;
     }
-
+    
+    .list::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .list::-webkit-scrollbar-track {
+      background: #1a1d29;
+      border-radius: 4px;
+    }
+    
+    .list::-webkit-scrollbar-thumb {
+      background: #3a3f51;
+      border-radius: 4px;
+    }
+    
     .item {
-      border: 2px solid #ddd;
-      padding: 12px;
+      border: 1px solid #2d3142;
       border-radius: 10px;
+      padding: 16px;
+      background: #1e222f;
+      transition: all 0.2s;
     }
-
-    .item.active { border-color: #667eea; }
-
-    .badge {
-      background: green;
-      color: white;
-      padding: 3px 8px;
-      border-radius: 10px;
+    
+    .item:hover {
+      border-color: #3a6d94;
+      background: #242837;
+    }
+    
+    .item.active {
+      border-color: #00d9ff;
+      background: #1e2a36;
+      box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.1);
+    }
+    
+    .item .meta {
+      font-size: 12px;
+      color: #8b92a8;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .item .meta b {
+      color: #00d9ff;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .item .note {
+      margin: 10px 0;
+      font-size: 14px;
+      color: #e4e6eb;
+      font-weight: 400;
+    }
+    
+    .item .tag {
+      display: inline-block;
       font-size: 11px;
-      margin-left: 6px;
+      padding: 5px 12px;
+      border-radius: 5px;
+      background: #2d5a7b;
+      color: #e4e6eb;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+    
+    .smallbtns {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .smallbtns button {
+      padding: 7px 12px;
+      font-size: 11px;
+      background: #2d3142;
+      color: #b4b9c7;
+    }
+    
+    .smallbtns button:hover {
+      background: #3a3f51;
+      color: #e4e6eb;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #2d6a4f;
+      color: #7fffb8;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: #5a5f73;
+      font-size: 14px;
+    }
+    
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    
+    .stat-box {
+      background: #1e222f;
+      border: 1px solid #2d3142;
+      padding: 18px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .stat-box .number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #00d9ff;
+      margin-bottom: 6px;
+    }
+    
+    .stat-box .label {
+      font-size: 11px;
+      color: #8b92a8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+    
+    .export-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #2d3142;
+    }
+    
+    .export-label {
+      font-size: 13px;
+      color: #b4b9c7;
+      margin-bottom: 10px;
+      font-weight: 500;
     }
   </style>
 </head>
-
 <body>
-<div class="container">
-  <h1>🐛 Code Debugging Timeline Tool</h1>
-
-  <div class="grid">
-
-    <!-- Editor -->
-    <div class="card">
-      <h2>Editor</h2>
-
-      <label>Code</label>
-      <textarea id="codeText"></textarea>
-
-      <div class="row">
-        <div>
-          <label>Error Type</label>
-          <input id="errorType">
+  <div class="container">
+    <div class="header">
+      <h1>Code Debugging Timeline Tool</h1>
+      <p class="subtitle">Track, analyze, and manage your debugging journey</p>
+    </div>
+    
+    <div class="grid">
+      <div class="card">
+        <h2><i class="fas fa-code"></i> Editor</h2>
+        
+        <label>Code</label>
+        <textarea id="codeText" placeholder="Paste your code here and track your debugging journey..."></textarea>
+        
+        <div class="row">
+          <div>
+            <label>Error Type</label>
+            <input id="errorType" placeholder="e.g., SyntaxError, NullPointer" />
+          </div>
+          <div>
+            <label>Note</label>
+            <input id="note" placeholder="What did you change?" />
+          </div>
         </div>
-        <div>
-          <label>Note</label>
-          <input id="note">
+        
+        <div class="btns">
+          <button onclick="saveStep()" class="primary">
+            <i class="fas fa-save"></i> Save Step
+          </button>
+          <button onclick="undoStep()">
+            <i class="fas fa-undo"></i> Undo
+          </button>
+          <button onclick="markBugFree()" class="success">
+            <i class="fas fa-check-circle"></i> Mark Bug-Free
+          </button>
+          <button onclick="jumpBugFree()">
+            <i class="fas fa-rocket"></i> Jump to Bug-Free
+          </button>
         </div>
+        
+        <h3>Current Version</h3>
+        <pre id="currentBox" class="out">No version loaded yet</pre>
       </div>
-
-      <!-- ✅ BUTTONS UPDATED HERE -->
-      <div class="btns">
-        <button onclick="saveStep()">Save</button>
-        <button onclick="undoStep()" class="secondary">Undo</button>
-        <button onclick="markBugFree()">Bug-Free</button>
-        <button onclick="jumpBugFree()" class="secondary">Jump</button>
-
-        <button onclick="exportTimeline()">Export</button>
-        <button onclick="importTimeline()" class="secondary">Import</button>
+      
+      <div class="card">
+        <h2><i class="fas fa-history"></i> Timeline</h2>
+        <div class="btns">
+          <button onclick="refresh()" class="primary">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+          <button onclick="clearAll()" class="danger">
+            <i class="fas fa-trash-alt"></i> Clear All
+          </button>
+        </div>
+        
+        <div class="export-section">
+          <div class="export-label">Data Management</div>
+          <div class="btns" style="margin-top: 8px;">
+            <button onclick="exportTimeline()">
+              <i class="fas fa-file-export"></i> Export
+            </button>
+            <button onclick="importTimeline()">
+              <i class="fas fa-file-import"></i> Import
+            </button>
+          </div>
+        </div>
+        
+        <div id="timeline" class="list"></div>
       </div>
-
-      <h3>Current Version</h3>
-      <pre id="currentBox" class="out">No version loaded</pre>
+      
+      <div class="card">
+        <h2><i class="fas fa-chart-line"></i> Analytics</h2>
+        <div class="btns">
+          <button onclick="loadAnalytics()" class="primary">
+            <i class="fas fa-sync"></i> Load Analytics
+          </button>
+        </div>
+        <div id="analyticsBox"></div>
+      </div>
     </div>
-
-    <!-- Timeline -->
-    <div class="card">
-      <h2>Timeline</h2>
-      <div id="timeline" class="list"></div>
-    </div>
-
-    <!-- Analytics -->
-    <div class="card">
-      <h2>Analytics</h2>
-      <div id="analyticsBox"></div>
-    </div>
-
   </div>
-</div>
-
-<script>
-  const API = "http://localhost:8080";
-
-  let timeline = [];
-  let currentIndex = -1;
-  let versionCounter = 0;
-
-  function saveStep() {
-    const codeText = codeTextEl.value;
-    if (!codeText.trim()) return alert("Enter code");
-
-    const v = {
-      versionId: ++versionCounter,
-      codeText,
-      note: note.value || "",
-      errorType: errorType.value || "Unknown",
-      timestamp: new Date().toISOString(),
-      bugFree: false
-    };
-
-    timeline.push(v);
-    currentIndex = timeline.length - 1;
-    refresh();
-  }
-
-  function refresh() {
-    const wrap = document.getElementById("timeline");
-    wrap.innerHTML = "";
-
-    timeline.forEach((v, i) => {
-      const div = document.createElement("div");
-      div.className = "item" + (i === currentIndex ? " active" : "");
-      div.innerHTML = `
-        <b>v${v.versionId}</b>
-        ${v.bugFree ? '<span class="badge">Bug-Free</span>' : ''}
-        <div>${v.note}</div>
-        <div>${v.errorType}</div>
-      `;
-      div.onclick = () => { currentIndex = i; refresh(); };
-      wrap.appendChild(div);
-    });
-
-    currentBox.textContent = timeline[currentIndex]
-      ? JSON.stringify(timeline[currentIndex], null, 2)
-      : "No version loaded";
-  }
-
-  function undoStep() {
-    if (currentIndex > 0) currentIndex--;
-    refresh();
-  }
-
-  function markBugFree() {
-    if (currentIndex >= 0) timeline[currentIndex].bugFree = true;
-    refresh();
-  }
-
-  function jumpBugFree() {
-    for (let i = timeline.length - 1; i >= 0; i--) {
-      if (timeline[i].bugFree) {
-        currentIndex = i;
-        refresh();
+  
+  <script>
+    let timeline = [];
+    let currentIndex = -1;
+    let versionCounter = 0;
+    
+    function esc(s) {
+      return (s ?? "").toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    
+    function saveStep() {
+      const codeText = document.getElementById("codeText").value;
+      const note = document.getElementById("note").value;
+      const errorType = document.getElementById("errorType").value;
+      
+      if (!codeText.trim()) {
+        alert("Please enter some code before saving");
         return;
       }
+      
+      const newVersion = {
+        versionId: ++versionCounter,
+        codeText,
+        note: note || "No note provided",
+        errorType: errorType || "Unknown",
+        timestamp: new Date().toISOString(),
+        bugFree: false
+      };
+      
+      if (currentIndex < timeline.length - 1) {
+        timeline = timeline.slice(0, currentIndex + 1);
+      }
+      
+      timeline.push(newVersion);
+      currentIndex = timeline.length - 1;
+      
+      document.getElementById("note").value = "";
+      
+      refresh();
+      loadAnalytics();
     }
-    alert("No bug-free version");
-  }
-
-  // ✅ EXPORT
-  async function exportTimeline() {
-    try {
-      const r = await fetch(API + "/export", { method: "POST" });
-      const j = await r.json();
-      alert(j.message);
-    } catch {
-      alert("Export failed");
+    
+    function refresh() {
+      const current = timeline[currentIndex] || null;
+      
+      const currentBox = document.getElementById("currentBox");
+      if (current) {
+        currentBox.textContent = JSON.stringify(current, null, 2);
+      } else {
+        currentBox.textContent = "No version loaded yet";
+      }
+      
+      const wrap = document.getElementById("timeline");
+      
+      if (timeline.length === 0) {
+        wrap.innerHTML = '<div class="empty-state">No versions saved yet. Start debugging to see your timeline.</div>';
+        return;
+      }
+      
+      wrap.innerHTML = "";
+      
+      timeline.slice().reverse().forEach((v, idx) => {
+        const actualIndex = timeline.length - 1 - idx;
+        const div = document.createElement("div");
+        div.className = "item" + (actualIndex === currentIndex ? " active" : "");
+        const dt = new Date(v.timestamp).toLocaleString();
+        
+        div.innerHTML = `
+          <div class="meta">
+            <b>v${v.versionId}</b>
+            <span>${esc(dt)}</span>
+            ${v.bugFree ? '<span class="badge"><i class="fas fa-check"></i> Bug-Free</span>' : '<span style="color: #5a5f73;">pending</span>'}
+          </div>
+          <div class="note">${esc(v.note)}</div>
+          <div class="tag">${esc(v.errorType)}</div>
+          <div class="smallbtns">
+            <button data-idx="${actualIndex}" data-act="load">
+              <i class="fas fa-folder-open"></i> Load
+            </button>
+            <button data-idx="${actualIndex}" data-act="mark">
+              <i class="fas fa-check"></i> Mark
+            </button>
+          </div>
+        `;
+        
+        div.querySelector('[data-act="load"]').onclick = (e) => {
+          const i = parseInt(e.target.closest('button').dataset.idx);
+          loadVersion(i);
+        };
+        
+        div.querySelector('[data-act="mark"]').onclick = (e) => {
+          const i = parseInt(e.target.closest('button').dataset.idx);
+          markVersionBugFree(i);
+        };
+        
+        wrap.appendChild(div);
+      });
     }
-  }
-
-  // ✅ IMPORT
-  async function importTimeline() {
-    try {
-      const r = await fetch(API + "/import", { method: "POST" });
-      const j = await r.json();
-      alert(j.message);
-      location.reload();
-    } catch {
-      alert("Import failed");
+    
+    function loadVersion(index) {
+      const v = timeline[index];
+      if (!v) return;
+      
+      document.getElementById("codeText").value = v.codeText || "";
+      document.getElementById("note").value = v.note || "";
+      document.getElementById("errorType").value = v.errorType || "";
+      
+      currentIndex = index;
+      refresh();
     }
-  }
+    
+    function undoStep() {
+      if (currentIndex <= 0) {
+        alert("Nothing to undo");
+        return;
+      }
+      
+      currentIndex--;
+      const v = timeline[currentIndex];
+      
+      document.getElementById("codeText").value = v.codeText || "";
+      document.getElementById("note").value = v.note || "";
+      document.getElementById("errorType").value = v.errorType || "";
+      
+      refresh();
+    }
+    
+    function markBugFree() {
+      if (currentIndex < 0) {
+        alert("No current version to mark");
+        return;
+      }
+      
+      timeline[currentIndex].bugFree = true;
+      refresh();
+      loadAnalytics();
+    }
+    
+    function markVersionBugFree(index) {
+      if (index < 0 || index >= timeline.length) return;
+      
+      timeline[index].bugFree = true;
+      refresh();
+      loadAnalytics();
+    }
+    
+    function jumpBugFree() {
+      const bugFreeVersions = timeline
+        .map((v, i) => ({v, i}))
+        .filter(({v}) => v.bugFree)
+        .reverse();
+      
+      if (bugFreeVersions.length === 0) {
+        alert("No bug-free versions found");
+        return;
+      }
+      
+      const {v, i} = bugFreeVersions[0];
+      
+      document.getElementById("codeText").value = v.codeText || "";
+      document.getElementById("note").value = v.note || "";
+      document.getElementById("errorType").value = v.errorType || "";
+      
+      currentIndex = i;
+      refresh();
+    }
+    
+    function loadAnalytics() {
+      const box = document.getElementById("analyticsBox");
+      
+      if (timeline.length === 0) {
+        box.innerHTML = '<div class="empty-state">No data to analyze yet</div>';
+        return;
+      }
+      
+      const totalVersions = timeline.length;
+      const bugFreeCount = timeline.filter(v => v.bugFree).length;
+      const errorTypes = {};
+      
+      timeline.forEach(v => {
+        const type = v.errorType || "Unknown";
+        errorTypes[type] = (errorTypes[type] || 0) + 1;
+      });
+      
+      const mostCommonError = Object.entries(errorTypes)
+        .sort((a, b) => b[1] - a[1])[0];
+      
+      const avgStepsToFix = bugFreeCount > 0 ? 
+        (totalVersions / bugFreeCount).toFixed(1) : "N/A";
+      
+      box.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="number">${totalVersions}</div>
+            <div class="label">Total Steps</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">${bugFreeCount}</div>
+            <div class="label">Bug-Free</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">${Object.keys(errorTypes).length}</div>
+            <div class="label">Error Types</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">${avgStepsToFix}</div>
+            <div class="label">Avg Steps</div>
+          </div>
+        </div>
+        <div class="out" style="margin-top: 16px;">
+${mostCommonError ? `Most Common Error: ${mostCommonError[0]} (${mostCommonError[1]} times)` : 'No errors tracked yet'}
 
-  const codeTextEl = document.getElementById("codeText");
-  const note = document.getElementById("note");
-  const errorType = document.getElementById("errorType");
-  const currentBox = document.getElementById("currentBox");
-</script>
+Error Breakdown:
+${Object.entries(errorTypes).map(([type, count]) => `  ${type}: ${count}`).join('\n')}
+        </div>
+      `;
+    }
+    
+    function clearAll() {
+      if (!confirm("Are you sure you want to clear all data? This cannot be undone.")) {
+        return;
+      }
+      
+      timeline = [];
+      currentIndex = -1;
+      versionCounter = 0;
+      
+      document.getElementById("codeText").value = "";
+      document.getElementById("note").value = "";
+      document.getElementById("errorType").value = "";
+      
+      refresh();
+      loadAnalytics();
+    }
+    
+    async function exportTimeline() {
+      if (timeline.length === 0) {
+        alert("No data to export");
+        return;
+      }
+      
+      const exportData = {
+        timeline,
+        currentIndex,
+        versionCounter,
+        exportDate: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `debug-timeline-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert("Timeline exported successfully");
+    }
+    
+    async function importTimeline() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        try {
+          const text = await file.text();
+          const data = JSON.parse(text);
+          
+          if (!data.timeline || !Array.isArray(data.timeline)) {
+            alert("Invalid file format");
+            return;
+          }
+          
+          timeline = data.timeline;
+          currentIndex = data.currentIndex ?? timeline.length - 1;
+          versionCounter = data.versionCounter ?? timeline.length;
+          
+          if (currentIndex >= 0 && currentIndex < timeline.length) {
+            const v = timeline[currentIndex];
+            document.getElementById("codeText").value = v.codeText || "";
+            document.getElementById("note").value = v.note || "";
+            document.getElementById("errorType").value = v.errorType || "";
+          }
+          
+          await refresh();
+          await loadAnalytics();
+          
+          alert("Timeline imported successfully");
+        } catch (err) {
+          alert("Failed to import timeline: " + err.message);
+        }
+      };
+      
+      input.click();
+    }
+    
+    refresh();
+    loadAnalytics();
+  </script>
 </body>
 </html>

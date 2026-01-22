@@ -62,4 +62,9 @@ public class VersionLinkedList {
         }
         return null;
     }
+
+    public void clearAll() {
+    head = tail = current = null;
+}
+
 }
