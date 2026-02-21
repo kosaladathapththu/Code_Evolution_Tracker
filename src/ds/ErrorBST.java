@@ -34,8 +34,35 @@ public class ErrorBST {
     }
 
     public String mostFrequent() {
-        if (root == null) return null;
+        if (root == null) return "None";
         return mostRec(root, new ErrorNode[]{null}).key;
+    }
+
+    public String mostFrequentWithCount() {
+        if (root == null) return "None:0";
+        ErrorNode best = mostRec(root, new ErrorNode[]{null});
+        return best.key + ":" + best.count;
+    }
+
+    public int totalErrors() {
+        return totalErrorsRec(root);
+    }
+
+    private int totalErrorsRec(ErrorNode node) {
+        if (node == null) return 0;
+        return node.count + totalErrorsRec(node.left) + totalErrorsRec(node.right);
+    }
+
+    public boolean contains(String errorType) {
+        return containsRec(root, errorType == null ? "Unknown" : errorType.trim());
+    }
+
+    private boolean containsRec(ErrorNode node, String key) {
+        if (node == null) return false;
+        int cmp = key.compareToIgnoreCase(node.key);
+        if (cmp < 0) return containsRec(node.left, key);
+        else if (cmp > 0) return containsRec(node.right, key);
+        else return true;
     }
 
     private ErrorNode mostRec(ErrorNode cur, ErrorNode[] best) {
@@ -46,7 +73,6 @@ public class ErrorBST {
         return best[0];
     }
 
-    
     public void clear() {
         root = null;
     }
