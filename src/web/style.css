@@ -40,8 +40,9 @@ button:hover { background: #f2f2f2; }
     
     h1 {
       color: #00d9ff;
-      font-size: 28px;
+      font-size: 32px;
       margin-bottom: 8px;
+      text-align: center;
       font-weight: 600;
       letter-spacing: -0.5px;
     }
