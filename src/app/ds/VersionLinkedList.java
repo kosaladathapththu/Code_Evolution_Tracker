@@ -11,6 +11,7 @@ public class VersionLinkedList {
     private VersionNode current;
 
     public VersionNode add(Version v) {
+        if (v == null) return null; // prevent null versions
         VersionNode n = new VersionNode(v);
         if (head == null) {
             head = tail = current = n;
@@ -32,6 +33,7 @@ public class VersionLinkedList {
     }
 
     public void setCurrent(VersionNode n) {
+        if (n == null) return; // safety check
         current = n;
     }
 
@@ -63,8 +65,17 @@ public class VersionLinkedList {
         return null;
     }
 
-    public void clearAll() {
-    head = tail = current = null;
-}
+    public int totalVersions() {
+        int count = 0;
+        VersionNode t = head;
+        while (t != null) {
+            count++;
+            t = t.next;
+        }
+        return count;
+    }
 
+    public void clearAll() {
+        head = tail = current = null;
+    }
 }
